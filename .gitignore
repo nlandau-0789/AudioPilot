@@ -1,0 +1,9 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Include Python cache in subdirectories
+**/__pycache__/
+
+venv/

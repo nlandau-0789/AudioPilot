@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap');
+
+*,
+body {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /*     margin: 25px 0; */
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    /*     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); */
+}
+
+button:active, tbody > tr:hover {
+    filter: brightness(0.9);
+}
+
+tbody > tr:active {
+    filter: brightness(0.8);
+}
+
+thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    min-width: 50px;
+}
+
+th {
+    user-select: none;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+tbody tr:nth-of-type(odd) {
+    background-color: #ffffff;
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.table-sortable th {
+    cursor: pointer;
+    position: relative;
+}
+
+.table-sortable th[sortstate="1"]::after {
+    content: "\25b4";
+}
+
+.table-sortable th[sortstate="2"]::after {
+    content: "\25be";
+}
+
+.table-sortable th[sortstate="1"]::after,
+.table-sortable th[sortstate="2"]::after {
+    /* 	margin-left: 5px; */
+    position: absolute;
+    right: 10px;
+}
+
+.table-sortable th[sortstate="1"],
+.table-sortable th[sortstate="2"] {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.add-button-wrapper {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    --rot: 0deg;
+    --oppa: 0%;
+}
+
+.add-button {
+    display: grid;
+    align-items: center;
+    border-radius: 50%;
+    padding: 10px;
+    border: none;
+    background: #fff;
+    box-shadow: 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%), 0px 3px 5px -1px rgb(0 0 0 / 20%);
+}
+
+.add-button-wrapper:hover {
+    --rot: 180deg;
+    --oppa: 100%;
+}
+
+.add-icon {
+    transition: .2s ease-in-out;
+    width: 40px;
+    transform: rotate(var(--rot));
+}
+
+.add-button-wrapper::before {
+    content: "";
+    transition: .2s linear;
+    opacity: var(--oppa);
+}
+
+.add-button-wrapper:hover::before {
+    content: "ajouter un anime";
+    opacity: var(--oppa);
+}
+
+button {
+    padding: 10px;
+}

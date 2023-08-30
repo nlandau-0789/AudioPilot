@@ -1,0 +1,59 @@
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class RequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        from api import get
+        handlers = get().handlers
+        for handler_data in handlers:
+            if handler_data["path"] == self.path:
+                self.send_response(200)
+                self.send_header('Content-type', handler_data["content_type"])
+                self.end_headers()
+                response_data = handler_data["handler"]()
+                self.wfile.write(response_data)
+                return
+        if self.headers.get('Range'):
+            import os, urllib.parse
+            self.path = urllib.parse.unquote(self.path)
+            self.file_size = os.path.getsize(self.path)
+            range_header = self.headers.get('Range')
+            start_byte = int(range_header.split('=')[1].split('-')[0])
+            end_byte = min(start_byte + 2**20, self.file_size)  # Adjust chunk size as needed
+            self.send_response(206)
+            self.send_header('Content-Range', f'bytes {start_byte}-{end_byte-1}/{self.file_size}')
+            self.send_header('Content-Length', end_byte - start_byte)
+            self.send_header('Content-Type', 'audio/mp3')  # Adjust content type based on your audio format
+            self.end_headers()
+            with open(self.path, 'rb') as file:
+                file.seek(start_byte)
+                chunk = file.read(end_byte - start_byte)
+                self.wfile.write(chunk)
+            return
+        self.path = self.path.strip("/")
+        try:
+            with open(self.path, 'rb') as file:
+                self.send_response(200)
+                if self.path.endswith('.html'):
+                    self.send_header('Content-type', 'text/html')
+                elif self.path.endswith('.css'):
+                    self.send_header('Content-type', 'text/css')
+                elif self.path.endswith('.js'):
+                    self.send_header('Content-type', 'application/javascript')
+                self.end_headers()
+                self.wfile.write(file.read())
+        except FileNotFoundError:
+            import json
+            self.send_response(200)
+            self.send_header('Content-type', 'text/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(f"404 - Not Found : {self.path}").encode("utf-8"))
+
+def run_server():
+    PORT = 8080
+    server_address = ('', PORT)
+    httpd = HTTPServer(server_address, RequestHandler)
+    print(f"Serving at port {PORT}")
+    httpd.serve_forever()
+
+if __name__ == '__main__':
+    run_server()
