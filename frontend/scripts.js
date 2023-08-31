@@ -16,7 +16,7 @@ function make_row(data, headers) {
     }
     e.addEventListener("click", (event) => {
         const lazyAudio = document.getElementById('lazyAudio');
-        lazyAudio.setAttribute("src", e.getAttribute("filename"));
+        lazyAudio.setAttribute("src", encodeURIComponent(e.getAttribute("filename")));
         lazyAudio.play()
     })
 
@@ -43,6 +43,13 @@ async function reload() {
     await fetchData()
     let table = document.getElementById("music-list-display")
     let table_body = document.querySelector("tbody")
+    let table_head = document.querySelector("thead")
+    table.removeChild(table_head)
+    table.removeChild(table_body)
+    table.appendChild(document.createElement("thead"))
+    table_body = document.createElement("tbody")
+    // table_body.classList.add("scroll-shadows")
+    table.appendChild(table_body)
     // console.log(data)
     // console.log(data.length)
     headers = Object.keys(music_data[0])
@@ -178,3 +185,14 @@ function sortTable() {
         body.appendChild(e)
     }
 }
+
+content = document.querySelector('#table-wrapper')
+wrapper = content.parentElement
+shadowTop = document.querySelector('.scroll-shadows-top')
+shadowBottom = document.querySelector('.scroll-shadows-bottom')
+
+content.addEventListener('scroll', function () {
+    var currentScroll = this.scrollTop / (this.scrollHeight - this.offsetHeight);
+    shadowTop.style.opacity = Math.min(currentScroll / 0.05, 1);
+    shadowBottom.style.opacity = Math.min((1 - currentScroll) / 0.05, 1);
+});

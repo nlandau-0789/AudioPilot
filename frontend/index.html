@@ -6,15 +6,56 @@
     <title>AudioPilot</title>
     <link rel="stylesheet" href="frontend/styles.css">
     <script src="frontend/scripts.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <section style="display: flex; width: 100%;">
-        <button id="reload-btn">reload</button>
+    <div id="table-wrapper" >
+        <table id="music-list-display" class="table-sortable">
+            <thead></thead>
+            <tbody ></tbody>
+        </table>
+    </div>
+    <div class="scroll-shadows-top"></div>
+    <div class="scroll-shadows-bottom"></div>
+    <nav id="playbar">
+        <button id="play-btn" role="button" tooltip="Jouer aléatoire">
+            <i class="fa-solid fa-shuffle"></i>
+            <i class="fa-solid fa-play"></i>
+            <i class="fa-solid fa-pause"></i>
+        </button>
+        <div class="sep"></div>
+        <button id="play-prec-btn" role="button" tooltip="Jouer précédent">
+            <i class="fa-solid fa-backward-step"></i>
+        </button>
+        <button id="stop-btn" role="button" tooltip="Arrêter de jouer">
+            <i class="fa-solid fa-stop"></i>
+        </button>
+        <button id="play-next-btn" role="button" tooltip="Jouer suivant">
+            <i class="fa-solid fa-forward-step"></i>
+        </button>
+        <div class="sep"></div>
         <audio id="lazyAudio" controls preload="none">Your browser does not support the audio element.</audio>
-    </section>
-    <table id="music-list-display" class="table-sortable">
-        <thead></thead>
-        <tbody></tbody>
-    </table>
+        <div class="sep"></div>
+        <button id="shuffle-btn" role="button" tooltip="Mélanger">
+            <i class="fa-solid fa-shuffle"></i>
+        </button>
+        <input type="checkbox" name="loop-btn" id="loop-btn" hidden>
+        <label for="loop-btn" role="button" id="loop-btn-label" tooltip="Boucler">
+            <i class="fa-solid fa-repeat"></i>
+        </label>
+        <div class="sep"></div>
+        <input type="text" placeholder="Rechercher">
+        <div class="sep"></div>
+        <button id="like-btn" role="button" tooltip="Liker">
+            <i class="fa-regular fa-thumbs-up"></i>
+        </button>
+        <button id="dislike-btn" role="button" tooltip="Disliker">
+            <i class="fa-regular fa-thumbs-down"></i>
+        </button>
+        
+        <button id="reload-btn" role="button" tooltip="Rafraichir">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+    </nav>
 </body>
 </html>
