@@ -1,9 +1,6 @@
 let sortStack = []
 let music_data;
-
-document.getElementById("reload-btn").addEventListener("click", () => {
-    reload();
-});
+let playlist = []
 
 function make_row(data, headers) {
     let e = document.createElement("tr")
@@ -18,6 +15,16 @@ function make_row(data, headers) {
         const lazyAudio = document.getElementById('lazyAudio');
         lazyAudio.setAttribute("src", encodeURIComponent(e.getAttribute("filename")));
         lazyAudio.play()
+        document.getElementById("play-btn").setAttribute("tooltip", "Pauser")
+        if (playlist.length) {
+            playlist[playlist.length - 1].removeAttribute("playing")
+            if (playlist[playlist.length - 1] == e) {
+                playlist.pop()
+            }
+        }
+        playlist.push(e)
+        playlist[playlist.length - 1].setAttribute("playing", "")
+        document.title = "AudioPilot - " + e.getAttribute("Titre")
     })
 
     return e
@@ -166,7 +173,7 @@ function handleSorting(event, headerCell) {
 }
 
 function sortTable() {
-    console.log(sortStack)
+    // console.log(sortStack)
     tableElement = document.getElementById("music-list-display")
     table = Array.from(tableElement.querySelector("tbody").children)
     // console.log(table)
@@ -195,4 +202,135 @@ content.addEventListener('scroll', function () {
     var currentScroll = this.scrollTop / (this.scrollHeight - this.offsetHeight);
     shadowTop.style.opacity = Math.min(currentScroll / 0.05, 1);
     shadowBottom.style.opacity = Math.min((1 - currentScroll) / 0.05, 1);
+});
+
+function getRandomElement(array) {
+    if (array.length === 0) {
+        return undefined; // Return undefined for empty arrays
+    }
+
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+}
+
+function shuffle_playlist(){
+    table = document.querySelector("#music-list-display > tbody").children
+    for (i = 0; i < table.length; i++){
+        table[i].setAttribute("shuffle-value", Math.random())
+    }
+    tableElement = document.getElementById("music-list-display")
+    table = Array.from(tableElement.querySelector("tbody").children)
+    // console.log(table)
+    tableElement.removeChild(tableElement.querySelector("tbody"))
+    body = document.createElement("tbody")
+    tableElement.appendChild(body)
+    sort(table, (a, b) => {
+        return compare(a, b, "shuffle-value", 1)
+    })
+    // sort(table, cmp)
+    // console.log(table)
+    for (e of table) {
+        body.appendChild(e)
+    }
+}
+
+function scroll_to_playing(){
+    headers_height = document.querySelector("#music-list-display > thead").clientHeight
+    document.getElementById("table-wrapper").scrollTo({top: playlist[playlist.length-1].offsetTop - headers_height, behavior: "smooth"})
+}
+
+function isPlaying() {
+    audio_element = document.querySelector("audio")
+    return (audio_element.duration > 0 && !audio_element.paused)
+}
+
+function is_looping_activated(){
+    return document.getElementById("loop-btn").checked
+}
+
+function stop_playing() {
+    lazyAudio.pause()
+    lazyAudio.removeAttribute("src")
+    new_audio = lazyAudio.cloneNode(true)
+    lazyAudio.parentElement.replaceChild(new_audio, lazyAudio)
+    lazyAudio.addEventListener("ended", (event) => {
+        play_next()
+    })
+    play_btn.setAttribute("tooltip", "Jouer aléatoire")
+    playlist[playlist.length - 1].removeAttribute("playing")
+    document.title = "AudioPilot"
+}
+
+function play_next() {
+    if (playlist[playlist.length - 1] != playlist[playlist.length - 1].parentElement.lastChild) {
+        playlist[playlist.length - 1].nextSibling.click()
+    } else {
+        if (is_looping_activated()){
+            playlist[playlist.length - 1].parentElement.firstChild.click()
+        } else {
+            stop_playing()
+        }
+    }
+}
+
+play_btn = document.getElementById("play-btn")
+play_btn.addEventListener("click", (event) => {
+    if (play_btn.getAttribute("tooltip") === "Jouer aléatoire") {
+        getRandomElement(document.querySelectorAll("#music-list-display > tbody > tr")).click()
+        scroll_to_playing()
+    } else if (play_btn.getAttribute("tooltip") === "Jouer") {
+        lazyAudio.play()
+        document.getElementById("play-btn").setAttribute("tooltip", "Pauser")
+    } else if (play_btn.getAttribute("tooltip") === "Pauser") {
+        lazyAudio.pause()
+        document.getElementById("play-btn").setAttribute("tooltip", "Jouer")
+    }
+})
+
+shuffle_btn = document.getElementById("shuffle-btn")
+shuffle_btn.addEventListener("click", (event) => {
+    if (isPlaying()){
+        shuffle_playlist()
+        document.querySelector("#music-list-display > tbody").insertBefore(playlist[playlist.length - 1], document.querySelector("#music-list-display > tbody > tr"))
+        scroll_to_playing()
+    } else {
+        shuffle_playlist()
+        document.getElementById("table-wrapper").scrollTo({top: 0, behavior: "smooth"})
+    }
+})
+
+prec_btn = document.getElementById("play-prec-btn")
+prec_btn.addEventListener("click", (event) => {
+    if (lazyAudio.currentTime < 5) {
+        playlist[playlist.length - 2].click()
+        playlist.pop()
+        playlist.pop()
+    } else {
+        playlist[playlist.length - 1].click()
+    }
+})
+
+stop_btn = document.getElementById("stop-btn")
+stop_btn.addEventListener("click", (event) => {
+    stop_playing()
+})
+
+next_btn = document.getElementById("play-next-btn")
+next_btn.addEventListener("click", (event) => {
+    play_next()
+})
+
+lazyAudio.addEventListener("ended", (event) => {
+    play_next()
+})
+
+find_btn = document.getElementById("find-btn")
+find_btn.addEventListener("click", (event) => {
+    scroll_to_playing()
+})
+
+
+
+document.getElementById("reload-btn").addEventListener("click", () => {
+    // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
 });

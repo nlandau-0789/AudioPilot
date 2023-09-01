@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="frontend/styles.css">
     <script src="frontend/scripts.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2875/2875424.png">
 </head>
 <body>
     <div id="table-wrapper" >
@@ -39,10 +40,13 @@
         <button id="shuffle-btn" role="button" tooltip="Mélanger">
             <i class="fa-solid fa-shuffle"></i>
         </button>
-        <input type="checkbox" name="loop-btn" id="loop-btn" hidden>
+        <input type="checkbox" name="loop-btn" id="loop-btn" hidden checked>
         <label for="loop-btn" role="button" id="loop-btn-label" tooltip="Boucler">
             <i class="fa-solid fa-repeat"></i>
         </label>
+        <button id="find-btn" role="button" tooltip="Trouver la musique en cours">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
         <div class="sep"></div>
         <input type="text" placeholder="Rechercher">
         <div class="sep"></div>

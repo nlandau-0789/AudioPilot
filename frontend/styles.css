@@ -12,7 +12,7 @@ body {
 }
 
 #table-wrapper {
-    height: calc(100vh - var(--playbar-height));
+    max-height: calc(100vh - var(--playbar-height));
     /* height: 100vh; */
     overflow-y: auto;
     border-bottom: 2px solid #009879;
@@ -31,7 +31,7 @@ table {
 button:active,
 tbody>tr:hover,
 input[type="checkbox"]:checked+label {
-    filter: brightness(0.9);
+    filter: brightness(0.8);
 }
 
 tbody>tr:active {
@@ -225,6 +225,10 @@ i {
     height: 16px;
 }
 
+audio {
+    width: calc(5 * var(--playbar-height) + 4 * 5px);
+}
+
 #playbar input[type="text"] {
     width: calc(5 * var(--playbar-height) + 4 * 5px);
     padding-left: calc(calc(var(--headers-height) - 1em) / 2);
@@ -250,4 +254,8 @@ i {
 
 #play-btn[tooltip="Pauser"] > i.fa-pause {
     display: block;
+}
+
+tr[playing] > td:nth-child(1)::before {
+    content: "▶";
 }
