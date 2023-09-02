@@ -51,7 +51,6 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-
         try:
             data = json.loads(post_data.decode('utf-8'))
         except json.JSONDecodeError:
@@ -59,13 +58,17 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'Invalid JSON data')
             return
-    
-        if self.path == '/api/set-score':
-            # Extract the filename from the URL
-            from api import update_cache
-            from audio_utils import update_score
-            update_score(data["filename"], data["new_score"])
-            update_cache()
+
+        from backend.api import post
+        handlers = post().handlers
+        for handler_data in handlers:
+            if handler_data["path"] == self.path:
+                self.send_response(200)
+                self.send_header('Content-type', handler_data["content_type"])
+                self.end_headers()
+                response_data = handler_data["handler"](data)
+                self.wfile.write(response_data or b"")
+                return
 
         self.send_response(200)
         self.end_headers()

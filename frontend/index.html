@@ -68,11 +68,25 @@
         </button>
     </nav>
     <dialog id="settings-modal">
-        <div class="inner-dialog">
-            <button id="close-settings-btn" role="button" tooltip="Fermer">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            
+        <div id="inner-dialog">
+            <div class="settings-header">
+                <h1>Paramètres</h1>
+                <button id="close-settings-btn" role="button" tooltip="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="settings">
+                <li><label for="music-dir-path">Chemin du répèrtoire de musique : </label><input type="text" id="music-dir-path" placeholder="Chemin vers un répertoire"></li>
+                <li><label for="theme">Couleur d'accent : </label><input type="color" id="theme" placeholder="Couleur d'accent"></li>
+            </ul>
+            <div class="settings-footer">
+                <button id="cancel-settings-btn" role="button" tooltip="Fermer">
+                    <i class="fa-solid fa-ban"></i>
+                </button>
+                <button id="save-settings-btn" role="button" tooltip="Fermer">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                </button>
+            </div>
         </div>
     </dialog>
 </body>

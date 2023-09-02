@@ -14,6 +14,15 @@ class get:
     def __call__(self, handler):
         self.handlers.append({"path": self.path, "content_type": self.content_type, "handler": handler})
 
+class post:
+    def __init__(self, path = "", content_type = "text/plain", handlers = []):
+        self.handlers = handlers
+        self.path = path
+        self.content_type = content_type
+        
+    def __call__(self, handler):
+        self.handlers.append({"path": self.path, "content_type": self.content_type, "handler": handler})
+
 @get('/', 'text/html')
 def get_front():
     with open('frontend/index.html', 'rb') as file:
@@ -60,4 +69,31 @@ def get_music_list():
     update_cache()
 
     return response_json
-            
+
+@get('/api/music-dir-path')
+def get_music_dir_path():
+    with open("backend/config.json", "r") as f:
+        music_dir = json.loads(f.read())["music-dir-path"]
+    response_data = {"path": music_dir}
+    response_json = json.dumps(response_data).encode('utf-8')
+    return response_json
+
+@get('/api/theme')
+def get_theme():
+    with open("backend/config.json", "r") as f:
+        music_dir = json.loads(f.read())["theme"]
+    response_data = {"color": music_dir}
+    response_json = json.dumps(response_data).encode('utf-8')
+    return response_json
+
+@post('/api/set-scores')
+def set_score(data):
+    from backend.api import update_cache
+    from backend.audio_utils import update_score
+    update_score(data["filename"], data["new_score"])
+    update_cache()
+
+@post('/api/save-settings')
+def set_settings(settings):
+    with open("backend/config.json", "w") as f:
+        f.write(json.dumps(settings))

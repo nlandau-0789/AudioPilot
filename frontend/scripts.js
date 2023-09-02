@@ -1,6 +1,8 @@
 let sortStack = []
 let music_data;
 let playlist = []
+let music_dir_path;
+let mainColor;
 
 function make_row(data, headers) {
     let e = document.createElement("tr")
@@ -47,9 +49,43 @@ async function fetchData() {
     }
 }
 
+async function getMusicDirPath() {
+    try {
+        const response = await fetch('http://localhost:8080/api/music-dir-path');
+
+        if (!response.ok) {
+            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        music_dir_path = data.path;  // Assign the data to the variable
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+    document.getElementById("music-dir-path").value = music_dir_path
+}
+
+async function getTheme() {
+    try {
+        const response = await fetch('http://localhost:8080/api/theme');
+
+        if (!response.ok) {
+            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        mainColor = data.color;  // Assign the data to the variable
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+    document.getElementById("theme").value = mainColor
+    document.querySelector("body").style.setProperty('--main-color', mainColor)
+}
 
 async function reload() {
     await fetchData()
+    await getMusicDirPath()
+    await getTheme()
     let table = document.getElementById("music-list-display")
     let table_body = document.querySelector("tbody")
     let table_head = document.querySelector("thead")
@@ -413,7 +449,7 @@ dislike_btn = document.getElementById("dislike-btn")
 
 like_btn.addEventListener("click", (event) => {
     if (lazyAudio.getAttribute("src")) {
-        if (like_btn.hasAttribute("liked")){
+        if (like_btn.hasAttribute("liked")) {
             playlist[playlist.length - 1].setAttribute("Score", -1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
             updateScore(playlist[playlist.length - 1])
             like_btn.removeAttribute("liked")
@@ -432,7 +468,7 @@ like_btn.addEventListener("click", (event) => {
 
 dislike_btn.addEventListener("click", (event) => {
     if (lazyAudio.getAttribute("src")) {
-        if (dislike_btn.hasAttribute("disliked")){
+        if (dislike_btn.hasAttribute("disliked")) {
             playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
             updateScore(playlist[playlist.length - 1])
             dislike_btn.removeAttribute("disliked")
@@ -488,4 +524,53 @@ settings_btn.addEventListener("click", (event) => {
 close_modal_btn = document.getElementById("close-settings-btn")
 close_modal_btn.addEventListener("click", (event) => {
     settings_modal.close()
+})
+
+settings_modal.addEventListener('click', () => { settings_modal.close() });
+
+settings_modal_inner = document.getElementById('inner-dialog');
+settings_modal_inner.addEventListener('click', (event) => { event.stopPropagation() });
+
+function update_color() {
+    document.querySelector("body").style.setProperty("--main-color", document.getElementById("theme").value)
+}
+
+function save_settings() {
+    // Create an object representing the request body
+    const requestBody = {
+        "music-dir-path": document.getElementById("music-dir-path").value,
+        "theme": document.getElementById("theme").value
+    };
+    mainColor = document.getElementById("theme").value
+    document.querySelector("body").style.setProperty('--main-color', mainColor)
+
+    // Make the POST request using the fetch API
+    fetch("/api/save-settings", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json" // Specify the content type as JSON
+        },
+        body: JSON.stringify(requestBody) // Convert the object to a JSON string
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+            }
+            // Handle the response here if needed
+        })
+        .catch(error => {
+            // Handle any errors that occurred during the fetch
+            console.error("Error:", error);
+        });
+}
+
+cancel_settings_btn = document.getElementById("cancel-settings-btn")
+save_settings_btn = document.getElementById("save-settings-btn")
+
+cancel_settings_btn.addEventListener("click", (event) => {
+    settings_modal.close()
+})
+
+save_settings_btn.addEventListener("click", (event) => {
+    save_settings()
 })
