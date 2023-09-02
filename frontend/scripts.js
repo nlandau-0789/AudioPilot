@@ -25,8 +25,8 @@ function make_row(data, headers) {
         playlist.push(e)
         playlist[playlist.length - 1].setAttribute("playing", "")
         document.title = "AudioPilot - " + e.getAttribute("Titre")
-        like_btn.removeAttribute("disabled")
-        dislike_btn.removeAttribute("disabled")
+        like_btn.removeAttribute("liked")
+        dislike_btn.removeAttribute("disliked")
     })
 
     return e
@@ -275,7 +275,7 @@ function play_next() {
     }
 }
 
-function updateScore(row) {
+async function updateScore(row) {
     headers = document.querySelectorAll("th")
     for (i = 0; i < headers.length; i++) {
         if (headers[i].textContent === "Score") {
@@ -300,7 +300,7 @@ function updateScore(row) {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.json(); // Parse the response as JSON
+            return response;
         })
         .then(data => {
             console.log('Server response:', data);
@@ -413,27 +413,39 @@ dislike_btn = document.getElementById("dislike-btn")
 
 like_btn.addEventListener("click", (event) => {
     if (lazyAudio.getAttribute("src")) {
-        playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
-        if (dislike_btn.disabled) {
-            playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
-            dislike_btn.removeAttribute("disabled")
+        if (like_btn.hasAttribute("liked")){
+            playlist[playlist.length - 1].setAttribute("Score", -1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+            updateScore(playlist[playlist.length - 1])
+            like_btn.removeAttribute("liked")
+            return
         }
-        console.log(playlist[playlist.length - 1].getAttribute("Score"))
+        playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+        if (dislike_btn.hasAttribute("disliked")) {
+            playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+            dislike_btn.removeAttribute("disliked")
+        }
+        // console.log(playlist[playlist.length - 1].getAttribute("Score"))
         updateScore(playlist[playlist.length - 1])
-        like_btn.setAttribute("disabled", "")
+        like_btn.setAttribute("liked", "")
     }
 })
 
 dislike_btn.addEventListener("click", (event) => {
     if (lazyAudio.getAttribute("src")) {
-        playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
-        if (like_btn.disabled) {
-            playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
-            like_btn.removeAttribute("disabled")
+        if (dislike_btn.hasAttribute("disliked")){
+            playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+            updateScore(playlist[playlist.length - 1])
+            dislike_btn.removeAttribute("disliked")
+            return
         }
-        console.log(playlist[playlist.length - 1].getAttribute("Score"))
+        playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
+        if (like_btn.hasAttribute("liked")) {
+            playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
+            like_btn.removeAttribute("liked")
+        }
+        // console.log(playlist[playlist.length - 1].getAttribute("Score"))
         updateScore(playlist[playlist.length - 1])
-        dislike_btn.setAttribute("disabled", "")
+        dislike_btn.setAttribute("disliked", "")
     }
 })
 

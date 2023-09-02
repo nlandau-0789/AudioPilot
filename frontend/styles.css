@@ -209,8 +209,9 @@ audio::-webkit-media-controls-play-button {
     background: #009879 !important;
 }
 
-#reload-btn {
-    margin-left: auto;
+div.lr-sep {
+    flex-grow: 1;
+    background: transparent !important;
 }
 
 [role="button"] {
@@ -257,20 +258,20 @@ audio {
 }
 
 tr[playing] > td:nth-child(1)::before {
-    content: "▶";
+    content: "▶ ";
 }
 
-#like-btn:disabled, #dislike-btn:disabled {
+#like-btn[liked], #dislike-btn[disliked] {
     opacity: 1;
     color: inherit;
 }
 
-#like-btn:not(:disabled) > i:nth-child(2), 
-#dislike-btn:not(:disabled) > i:nth-child(2) {
+#like-btn:not([liked]) > i:nth-child(2), 
+#dislike-btn:not([disliked]) > i:nth-child(2) {
     display: none;
 }
 
-#like-btn:disabled > i:nth-child(1), 
-#dislike-btn:disabled > i:nth-child(1) {
+#like-btn[liked] > i:nth-child(1), 
+#dislike-btn[disliked] > i:nth-child(1) {
     display: none;
 }
