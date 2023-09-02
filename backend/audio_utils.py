@@ -1,3 +1,7 @@
+import json
+with open("backend/config.json", "r") as f:
+    music_dir = json.loads(f.read())["music-dir-path"]
+
 def format_time(seconds):
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
@@ -24,21 +28,21 @@ def get_audio_data(filename):
     except AttributeError:
         audio.initTag()
         result = {
-            "Titre": [filename.replace("../music/", "")]*2,
+            "Titre": [filename.replace(music_dir, "")]*2,
             "Artiste": [""]*2,
             "Durée": [format_time(audio.info.time_secs), audio.info.time_secs],
             "Album": [""]*2,
             "Score": ["0"]*2,
             "filename": [filename]*2,
         }
-    audio.tag.title = filename.replace("../music/", "")
-    audio.tag.artist = ""
-    audio.tag.payment_url = audio.tag.payment_url or "0"
-    audio.tag.save()
+        audio.tag.title = filename.replace(music_dir, "")
+        audio.tag.artist = ""
+        audio.tag.payment_url = audio.tag.payment_url or "0"
+    audio.tag.save(encoding="utf-8")
     return result
 
 def update_score(filename, new_score):
     import os
     audio = eyed3.load(os.path.join("/music", filename))
     audio.tag.payment_url = new_score
-    audio.tag.save()
+    audio.tag.save(encoding="utf-8")

@@ -478,3 +478,14 @@ search_bar.addEventListener("keydown", (event) => {
         e.setAttribute("sortState", 0)
     })
 })
+
+settings_btn = document.getElementById("settings-btn")
+settings_modal = document.getElementById("settings-modal")
+settings_btn.addEventListener("click", (event) => {
+    settings_modal.showModal()
+})
+
+close_modal_btn = document.getElementById("close-settings-btn")
+close_modal_btn.addEventListener("click", (event) => {
+    settings_modal.close()
+})

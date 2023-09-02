@@ -266,6 +266,10 @@ tr[playing] > td:nth-child(1)::before {
     color: inherit;
 }
 
+#like-btn:active, #dislike-btn:active {
+    filter: brightness(1) !important;
+}
+
 #like-btn:not([liked]) > i:nth-child(2), 
 #dislike-btn:not([disliked]) > i:nth-child(2) {
     display: none;

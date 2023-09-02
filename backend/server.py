@@ -3,7 +3,7 @@ import json
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        from api import get
+        from backend.api import get
         handlers = get().handlers
         for handler_data in handlers:
             if handler_data["path"] == self.path:
@@ -67,8 +67,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             update_score(data["filename"], data["new_score"])
             update_cache()
 
-
-
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b"")
@@ -80,5 +78,3 @@ def run_server():
     print(f"Serving at port {PORT}")
     httpd.serve_forever()
 
-if __name__ == '__main__':
-    run_server()
