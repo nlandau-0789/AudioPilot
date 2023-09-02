@@ -3,7 +3,7 @@ import json
 import threading
 
 with open("backend/config.json", "r") as f:
-    music_dir = json.loads(f.read())["music-dir-path"]
+    music_dir = json.loads(f.read())["music_dir_path"]
 
 class get:
     def __init__(self, path = "", content_type = "application/json", handlers = []):
@@ -73,7 +73,7 @@ def get_music_list():
 @get('/api/music-dir-path')
 def get_music_dir_path():
     with open("backend/config.json", "r") as f:
-        music_dir = json.loads(f.read())["music-dir-path"]
+        music_dir = json.loads(f.read())["music_dir_path"]
     response_data = {"path": music_dir}
     response_json = json.dumps(response_data).encode('utf-8')
     return response_json
@@ -84,6 +84,12 @@ def get_theme():
         music_dir = json.loads(f.read())["theme"]
     response_data = {"color": music_dir}
     response_json = json.dumps(response_data).encode('utf-8')
+    return response_json
+
+@get('/api/settings')
+def get_settings():
+    with open("backend/config.json", "r") as f:
+        response_json = f.read().encode('utf-8')
     return response_json
 
 @post('/api/set-scores')

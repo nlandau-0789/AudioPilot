@@ -1,6 +1,6 @@
 import json
 with open("backend/config.json", "r") as f:
-    music_dir = json.loads(f.read())["music-dir-path"]
+    music_dir = json.loads(f.read())["music_dir_path"]
 
 def format_time(seconds):
     hours = int(seconds // 3600)

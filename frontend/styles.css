@@ -34,8 +34,7 @@ table {
 }
 
 button:active,
-tbody>tr:hover,
-input[type="checkbox"]:checked+label {
+tbody>tr:hover {
     filter: brightness(0.8);
 }
 
@@ -229,6 +228,7 @@ i {
     /* Adjust the size as needed */
     width: 16px;
     height: 16px;
+    text-align: center;
 }
 
 audio {
@@ -352,9 +352,9 @@ ul.settings>li>label {
     margin-right: auto;
 }
 
-ul.settings input {
+ul.settings input,
+#shuffle-type-btn {
     background-color: var(--btn-bg-color);
-    /* height: 30px; */
     border-radius: var(--playbar-border-radius);
     padding: 10px;
     height: 40px;
@@ -368,4 +368,21 @@ ul.settings input {
 
 #save-settings-btn {
     background-color: var(--main-color);
+}
+
+#shuffle-type-btn {
+    margin: 0;
+    aspect-ratio: 1;
+}
+
+[type="checkbox"]:checked+label {
+    background-color: var(--main-color) !important;
+}
+
+[type="checkbox"]:checked+#shuffle-type-btn i:nth-child(2) {
+    display: none;
+}
+
+[type="checkbox"]:not(:checked)+#shuffle-type-btn i:nth-child(1) {
+    display: none;
 }

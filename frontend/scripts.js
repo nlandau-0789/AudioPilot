@@ -3,6 +3,7 @@ let music_data;
 let playlist = []
 let music_dir_path;
 let mainColor;
+let weightedShuffle = true;
 
 function make_row(data, headers) {
     let e = document.createElement("tr")
@@ -49,43 +50,30 @@ async function fetchData() {
     }
 }
 
-async function getMusicDirPath() {
+async function getSettings() {
     try {
-        const response = await fetch('http://localhost:8080/api/music-dir-path');
+        const response = await fetch('http://localhost:8080/api/settings');
 
         if (!response.ok) {
             throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
         }
 
         const data = await response.json();
-        music_dir_path = data.path;  // Assign the data to the variable
+        music_dir_path = data["music_dir_path"];  // Assign the data to the variable
+        mainColor = data["theme"];  // Assign the data to the variable
+        weightedShuffle = data["weighted_shuffle"];  // Assign the data to the variable
     } catch (error) {
         console.error('Error fetching data:', error);
     }
     document.getElementById("music-dir-path").value = music_dir_path
-}
-
-async function getTheme() {
-    try {
-        const response = await fetch('http://localhost:8080/api/theme');
-
-        if (!response.ok) {
-            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        mainColor = data.color;  // Assign the data to the variable
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-    document.getElementById("theme").value = mainColor
     document.querySelector("body").style.setProperty('--main-color', mainColor)
+    document.getElementById("theme").value = mainColor
+    document.getElementById("shuffle-type").checked = weightedShuffle
 }
 
 async function reload() {
     await fetchData()
-    await getMusicDirPath()
-    await getTheme()
+    await getSettings()
     let table = document.getElementById("music-list-display")
     let table_body = document.querySelector("tbody")
     let table_head = document.querySelector("thead")
@@ -538,8 +526,9 @@ function update_color() {
 function save_settings() {
     // Create an object representing the request body
     const requestBody = {
-        "music-dir-path": document.getElementById("music-dir-path").value,
-        "theme": document.getElementById("theme").value
+        "music_dir_path": document.getElementById("music-dir-path").value,
+        "theme": document.getElementById("theme").value,
+        "weighted_shuffle": document.getElementById("shuffle-type").checked
     };
     mainColor = document.getElementById("theme").value
     document.querySelector("body").style.setProperty('--main-color', mainColor)

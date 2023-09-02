@@ -76,8 +76,22 @@
                 </button>
             </div>
             <ul class="settings">
-                <li><label for="music-dir-path">Chemin du répèrtoire de musique : </label><input type="text" id="music-dir-path" placeholder="Chemin vers un répertoire"></li>
-                <li><label for="theme">Couleur d'accent : </label><input type="color" id="theme" placeholder="Couleur d'accent"></li>
+                <li>
+                    <label for="music-dir-path">Chemin du répèrtoire de musique : </label>
+                    <input type="text" id="music-dir-path" placeholder="Chemin vers un répertoire">
+                </li>
+                <li>
+                    <label for="theme">Couleur d'accent : </label>
+                    <input type="color" id="theme" placeholder="Couleur d'accent">
+                </li>
+                <li>
+                    <label for="shuffle-type">Mélange pondéré : </label>
+                    <input type="checkbox" id="shuffle-type" placeholder="Couleur d'accent" hidden checked>
+                    <label for="shuffle-type" id="shuffle-type-btn" role="button">
+                        <i class="fa-solid fa-check"></i>
+                        <i class="fa-solid fa-xmark"></i>
+                    </label>
+                </li>
             </ul>
             <div class="settings-footer">
                 <button id="cancel-settings-btn" role="button" tooltip="Fermer">
