@@ -1,5 +1,6 @@
 import os
 import json
+import threading
 
 class get:
     def __init__(self, path = "", content_type = "application/json", handlers = []):
@@ -41,6 +42,8 @@ def make_full_cache():
         f.write(json.dumps(music_data))
     print("Done writing full cache")
 
+update_cache = lambda : threading.Thread(target=make_full_cache).start()
+
 @get('/api/music-data')
 def get_music_list():
     with open("cache/music_list.cache", "r", encoding="utf-8") as f:
@@ -51,8 +54,7 @@ def get_music_list():
     response_data = {"list": music_data}
     response_json = json.dumps(response_data).encode('utf-8')
 
-    import threading
-    threading.Thread(target=make_full_cache).start()
+    update_cache()
 
     return response_json
             

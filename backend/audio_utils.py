@@ -32,4 +32,11 @@ def get_audio_data(filename):
             "filename": [filename]*2,
         }
     audio.tag.payment_url = audio.tag.payment_url or "0"
+    audio.tag.save()
     return result
+
+def update_score(filename, new_score):
+    import os
+    audio = eyed3.load(os.path.join("/music", filename))
+    audio.tag.payment_url = new_score
+    audio.tag.save()

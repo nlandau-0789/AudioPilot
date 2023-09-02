@@ -259,3 +259,18 @@ audio {
 tr[playing] > td:nth-child(1)::before {
     content: "▶";
 }
+
+#like-btn:disabled, #dislike-btn:disabled {
+    opacity: 1;
+    color: inherit;
+}
+
+#like-btn:not(:disabled) > i:nth-child(2), 
+#dislike-btn:not(:disabled) > i:nth-child(2) {
+    display: none;
+}
+
+#like-btn:disabled > i:nth-child(1), 
+#dislike-btn:disabled > i:nth-child(1) {
+    display: none;
+}

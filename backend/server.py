@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -42,11 +43,35 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(file.read())
         except FileNotFoundError:
-            import json
             self.send_response(200)
             self.send_header('Content-type', 'text/json')
             self.end_headers()
             self.wfile.write(json.dumps(f"404 - Not Found : {self.path}").encode("utf-8"))
+    
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+
+        try:
+            data = json.loads(post_data.decode('utf-8'))
+        except json.JSONDecodeError:
+            self.send_response(400)  # Bad Request
+            self.end_headers()
+            self.wfile.write(b'Invalid JSON data')
+            return
+    
+        if self.path == '/api/set-score':
+            # Extract the filename from the URL
+            from api import update_cache
+            from audio_utils import update_score
+            update_score(data["filename"], data["new_score"])
+            update_cache()
+
+
+
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"")
 
 def run_server():
     PORT = 8080

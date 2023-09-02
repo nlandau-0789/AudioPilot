@@ -25,6 +25,8 @@ function make_row(data, headers) {
         playlist.push(e)
         playlist[playlist.length - 1].setAttribute("playing", "")
         document.title = "AudioPilot - " + e.getAttribute("Titre")
+        like_btn.removeAttribute("disabled")
+        dislike_btn.removeAttribute("disabled")
     })
 
     return e
@@ -213,9 +215,9 @@ function getRandomElement(array) {
     return array[randomIndex];
 }
 
-function shuffle_playlist(){
+function shuffle_playlist() {
     table = document.querySelector("#music-list-display > tbody").children
-    for (i = 0; i < table.length; i++){
+    for (i = 0; i < table.length; i++) {
         table[i].setAttribute("shuffle-value", Math.random())
     }
     tableElement = document.getElementById("music-list-display")
@@ -234,9 +236,9 @@ function shuffle_playlist(){
     }
 }
 
-function scroll_to_playing(){
+function scroll_to_playing() {
     headers_height = document.querySelector("#music-list-display > thead").clientHeight
-    document.getElementById("table-wrapper").scrollTo({top: playlist[playlist.length-1].offsetTop - headers_height, behavior: "smooth"})
+    document.getElementById("table-wrapper").scrollTo({ top: playlist[playlist.length - 1].offsetTop - headers_height, behavior: "smooth" })
 }
 
 function isPlaying() {
@@ -244,7 +246,7 @@ function isPlaying() {
     return (audio_element.duration > 0 && !audio_element.paused)
 }
 
-function is_looping_activated(){
+function is_looping_activated() {
     return document.getElementById("loop-btn").checked
 }
 
@@ -265,12 +267,89 @@ function play_next() {
     if (playlist[playlist.length - 1] != playlist[playlist.length - 1].parentElement.lastChild) {
         playlist[playlist.length - 1].nextSibling.click()
     } else {
-        if (is_looping_activated()){
+        if (is_looping_activated()) {
             playlist[playlist.length - 1].parentElement.firstChild.click()
         } else {
             stop_playing()
         }
     }
+}
+
+function updateScore(row) {
+    headers = document.querySelectorAll("th")
+    for (i = 0; i < headers.length; i++) {
+        if (headers[i].textContent === "Score") {
+            idx = i
+        }
+    }
+    row.querySelectorAll("td")[idx].textContent = row.getAttribute("Score")
+    const postData = {
+        new_score: row.getAttribute("Score"),
+        filename: row.getAttribute("filename")
+    };
+
+    // Make a POST request to the server
+    fetch("/api/set-score", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Parse the response as JSON
+        })
+        .then(data => {
+            console.log('Server response:', data);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
+
+function stringDistance(str1, str2) {
+    const matchScore = 2;
+    const mismatchScore = -1;
+    const gapPenalty = -2;
+    const rows = str1.length + 1;
+    const cols = str2.length + 1;
+
+    if (str1.toLowerCase().includes(str2.toLowerCase())) {
+        return 10000;
+    }
+
+    // Convert both sequences to lowercase
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
+
+    // Initialize the score matrix with zeros
+    const scoreMatrix = Array.from(Array(rows), () => Array(cols).fill(0));
+
+    // Initialize variables to keep track of the maximum score
+    let maxScore = 0;
+
+    // Fill in the score matrix
+    for (let i = 1; i < rows; i++) {
+        for (let j = 1; j < cols; j++) {
+            // Calculate scores for match, mismatch, insertion, and deletion
+            const match = scoreMatrix[i - 1][j - 1] + (str1[i - 1] === str2[j - 1] ? matchScore : mismatchScore);
+            const insert = scoreMatrix[i - 1][j] + gapPenalty;
+            const deleteScore = scoreMatrix[i][j - 1] + gapPenalty;
+
+            // Update the current cell with the maximum score
+            scoreMatrix[i][j] = Math.max(0, match, insert, deleteScore);
+
+            // Update the maximum score
+            if (scoreMatrix[i][j] > maxScore) {
+                maxScore = scoreMatrix[i][j];
+            }
+        }
+    }
+
+    return maxScore;
 }
 
 play_btn = document.getElementById("play-btn")
@@ -289,13 +368,13 @@ play_btn.addEventListener("click", (event) => {
 
 shuffle_btn = document.getElementById("shuffle-btn")
 shuffle_btn.addEventListener("click", (event) => {
-    if (isPlaying()){
+    if (isPlaying()) {
         shuffle_playlist()
         document.querySelector("#music-list-display > tbody").insertBefore(playlist[playlist.length - 1], document.querySelector("#music-list-display > tbody > tr"))
         scroll_to_playing()
     } else {
         shuffle_playlist()
-        document.getElementById("table-wrapper").scrollTo({top: 0, behavior: "smooth"})
+        document.getElementById("table-wrapper").scrollTo({ top: 0, behavior: "smooth" })
     }
 })
 
@@ -329,8 +408,61 @@ find_btn.addEventListener("click", (event) => {
     scroll_to_playing()
 })
 
+like_btn = document.getElementById("like-btn")
+dislike_btn = document.getElementById("dislike-btn")
 
+like_btn.addEventListener("click", (event) => {
+    if (lazyAudio.getAttribute("src")) {
+        playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+        if (dislike_btn.disabled) {
+            playlist[playlist.length - 1].setAttribute("Score", 1 + parseInt(playlist[playlist.length - 1].getAttribute("Score")))
+            dislike_btn.removeAttribute("disabled")
+        }
+        console.log(playlist[playlist.length - 1].getAttribute("Score"))
+        updateScore(playlist[playlist.length - 1])
+        like_btn.setAttribute("disabled", "")
+    }
+})
+
+dislike_btn.addEventListener("click", (event) => {
+    if (lazyAudio.getAttribute("src")) {
+        playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
+        if (like_btn.disabled) {
+            playlist[playlist.length - 1].setAttribute("Score", parseInt(playlist[playlist.length - 1].getAttribute("Score")) - 1)
+            like_btn.removeAttribute("disabled")
+        }
+        console.log(playlist[playlist.length - 1].getAttribute("Score"))
+        updateScore(playlist[playlist.length - 1])
+        dislike_btn.setAttribute("disabled", "")
+    }
+})
 
 document.getElementById("reload-btn").addEventListener("click", () => {
     // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
 });
+
+search_bar = document.getElementById("search-bar")
+search_bar.addEventListener("keydown", (event) => {
+    table = document.querySelector("#music-list-display > tbody").children
+    for (i = 0; i < table.length; i++) {
+        table[i].setAttribute("search-value", stringDistance(table[i].getAttribute("Titre"), search_bar.value))
+    }
+    tableElement = document.getElementById("music-list-display")
+    table = Array.from(tableElement.querySelector("tbody").children)
+    // console.log(table)
+    tableElement.removeChild(tableElement.querySelector("tbody"))
+    body = document.createElement("tbody")
+    tableElement.appendChild(body)
+    sort(table, (a, b) => {
+        return compare(a, b, "search-value", 1)
+    })
+    // sort(table, cmp)
+    // console.log(table)
+    for (e of table) {
+        body.appendChild(e)
+    }
+    document.getElementById("table-wrapper").scrollTo({ top: 0, behavior: "smooth" })
+    document.querySelectorAll("th").forEach((e) => {
+        e.setAttribute("sortState", 0)
+    })
+})
