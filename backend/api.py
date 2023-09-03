@@ -3,7 +3,7 @@ import json
 import threading
 
 with open("backend/config.json", "r") as f:
-    music_dir = json.loads(f.read())["music_dir_path"]
+    music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
 class get:
     def __init__(self, path = "", content_type = "application/json", handlers = []):
@@ -92,12 +92,19 @@ def get_settings():
         response_json = f.read().encode('utf-8')
     return response_json
 
-@post('/api/set-scores')
+@post('/api/set-score')
 def set_score(data):
-    from backend.api import update_cache
     from backend.audio_utils import update_score
     update_score(data["filename"], data["new_score"])
+    print(f"{data['filename']}'s new score : {data['new_score']}")
     update_cache()
+
+@get('/api/reset-scores')
+def reset_scores():
+    from backend.audio_utils import update_score
+    [update_score(filename, "0") for filename in os.listdir(music_dir) if ".mp3" in filename]
+    update_cache()
+    return b""
 
 @post('/api/save-settings')
 def set_settings(settings):

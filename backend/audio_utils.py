@@ -1,6 +1,6 @@
-import json
+import json, os
 with open("backend/config.json", "r") as f:
-    music_dir = json.loads(f.read())["music_dir_path"]
+    music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
 def format_time(seconds):
     hours = int(seconds // 3600)
@@ -37,12 +37,12 @@ def get_audio_data(filename):
         }
         audio.tag.title = filename.replace(music_dir, "")
         audio.tag.artist = ""
-        audio.tag.payment_url = audio.tag.payment_url or "0"
+    audio.tag.payment_url = audio.tag.payment_url or "0"
     audio.tag.save(encoding="utf-8")
     return result
 
 def update_score(filename, new_score):
     import os
-    audio = eyed3.load(os.path.join("/music", filename))
+    audio = eyed3.load(os.path.join(music_dir, filename))
     audio.tag.payment_url = new_score
     audio.tag.save(encoding="utf-8")

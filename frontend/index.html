@@ -59,17 +59,20 @@
             <i class="fa-regular fa-thumbs-down"></i>
             <i class="fa-solid fa-thumbs-down"></i>
         </button>
+        <button id="reset-scores-btn" role="button" tooltip="Réinitialiser les scores">
+            <i class="fa-regular fa-trash-can-xmark"></i>
+        </button>
         <div class="lr-sep"></div>
         <button id="settings-btn" role="button" tooltip="Paramètres">
             <i class="fa-regular fa-gear"></i>
         </button>
-        <button id="reload-btn" role="button" tooltip="Rafraichir">
+        <!-- <button id="reload-btn" role="button" tooltip="Rafraichir">
             <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
+        </button> -->
     </nav>
     <dialog id="settings-modal">
         <div id="inner-dialog">
-            <div class="settings-header">
+            <div class="dialog-header">
                 <h1>Paramètres</h1>
                 <button id="close-settings-btn" role="button" tooltip="Fermer">
                     <i class="fa-solid fa-xmark"></i>
@@ -93,11 +96,30 @@
                     </label>
                 </li>
             </ul>
-            <div class="settings-footer">
+            <div class="dialog-footer">
                 <button id="cancel-settings-btn" role="button" tooltip="Fermer">
                     <i class="fa-solid fa-ban"></i>
                 </button>
                 <button id="save-settings-btn" role="button" tooltip="Fermer">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                </button>
+            </div>
+        </div>
+    </dialog>
+    <dialog id="confirm-modal">
+        <div class="inner-dialog">
+            <div class="dialog-header">
+                <h1>Confimer</h1>
+                <button id="close-confirm-btn" role="button" tooltip="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <span>Êtes-vous sûr de vouloir réinitialiser les scores ?</span>
+            <div class="dialog-footer">
+                <button id="cancel-confirm-btn" role="button" tooltip="Fermer">
+                    <i class="fa-solid fa-ban"></i>
+                </button>
+                <button id="confirm-btn" role="button" tooltip="Fermer">
                     <i class="fa-regular fa-floppy-disk"></i>
                 </button>
             </div>

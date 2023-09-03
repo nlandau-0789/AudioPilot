@@ -307,7 +307,7 @@ dialog>div {
     flex-direction: column;
 }
 
-.settings-header {
+.dialog-header {
     height: 50px;
     width: 100%;
     /* padding-left: 10px; */
@@ -316,7 +316,7 @@ dialog>div {
     margin-bottom: var(--inner-padding);
 }
 
-.settings-footer {
+.dialog-footer {
     height: 50px;
     width: 100%;
     /* padding-left: 10px; */
@@ -366,7 +366,8 @@ ul.settings input,
     width: 60px;
 }
 
-#save-settings-btn {
+#save-settings-btn,
+#confirm-btn {
     background-color: var(--main-color);
 }
 

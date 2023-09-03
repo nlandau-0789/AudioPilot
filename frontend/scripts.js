@@ -239,7 +239,7 @@ function getRandomElement(array) {
     return array[randomIndex];
 }
 
-function shuffle_playlist() {
+function random_shuffle_playlist() {
     table = document.querySelector("#music-list-display > tbody").children
     for (i = 0; i < table.length; i++) {
         table[i].setAttribute("shuffle-value", Math.random())
@@ -257,6 +257,89 @@ function shuffle_playlist() {
     // console.log(table)
     for (e of table) {
         body.appendChild(e)
+    }
+}
+
+function softmax(scores) {
+    scores = scores.map((score) => parseInt(score))
+    const maxScore = Math.max(...scores)
+    const expScores = scores.map((score) => Math.exp(parseInt(score)-maxScore));
+    const sumExpScores = expScores.reduce((acc, expScore) => acc + expScore, 0);
+    const res = expScores.map((expScore) => expScore / sumExpScores);
+    // console.log(maxScore, expScores, sumExpScores, res)
+    return res
+}
+
+function weighted_shuffle_playlist() {
+    tableElement = document.getElementById("music-list-display")
+    table = Array.from(tableElement.querySelector("tbody").children)
+    // console.log(table)
+    tableElement.removeChild(tableElement.querySelector("tbody"))
+    body = document.createElement("tbody")
+    tableElement.appendChild(body)
+    sort(table, (a, b) => {
+        return compare(a, b, "Score", 1)
+    })
+
+    const splitIndex = Math.floor(table.length * 0.75);
+    const his = table.slice(0, splitIndex);
+    const los = table.slice(splitIndex);
+
+    scoresHi = softmax(his.map((e) => e.getAttribute("Score")))
+    for (i = 0; i < his.length; i++) {
+        his[i].setAttribute("custom-shuffle-score", scoresHi[i])
+    }
+    
+    scoresLo = softmax(los.map((e) => e.getAttribute("Score")))
+    for (i = 0; i < los.length; i++) {
+        los[i].setAttribute("custom-shuffle-score", scoresLo[i])
+    }
+
+    hiMax = 1
+    loMax = 1
+
+    // sort(table, cmp)
+    // console.log(table)
+    // console.log(his)
+    // console.log(los)
+    for (i = 0; i < table.length; i++) {
+        if ((Math.random() <= 0.8 && his.length > 0) || los.length === 0) {
+            t = Math.random() * hiMax
+            idx = 0
+            while (t-his[idx].getAttribute("custom-shuffle-score") > 0 && idx <= his.length){
+                t-=his[idx].getAttribute("custom-shuffle-score")
+                idx++
+            }
+            if (idx === his.length) {
+                idx--
+            }
+            e = his[idx]
+            his.splice(idx, 1)
+            hiMax -= e.getAttribute("custom-shuffle-score")
+        } else {
+            t = Math.random() * loMax
+            idx = 0
+            while (t-los[idx].getAttribute("custom-shuffle-score") > 0 && idx <= los.length){
+                t-=los[idx].getAttribute("custom-shuffle-score")
+                idx++
+            }
+            if (idx === los.length) {
+                idx--
+            }
+            e = los[idx]
+            los.splice(idx, 1)
+            loMax -= e.getAttribute("custom-shuffle-score")
+        }
+        // console.log(e, hiMax, loMax)
+        body.appendChild(e)
+    }
+}
+
+function shuffle_playlist() {
+    if (weightedShuffle){
+        weighted_shuffle_playlist()
+    } else {
+        random_shuffle_playlist()
     }
 }
 
@@ -327,7 +410,7 @@ async function updateScore(row) {
             return response;
         })
         .then(data => {
-            console.log('Server response:', data);
+            // console.log('Server response:', data);
         })
         .catch(error => {
             console.error('Fetch error:', error);
@@ -473,6 +556,13 @@ dislike_btn.addEventListener("click", (event) => {
     }
 })
 
+reset_scores_btn = document.getElementById("reset-scores-btn")
+reset_scores_btn.addEventListener("click", (event) => {
+    document.getElementById("confirm-modal").showModal()
+})
+
+
+
 document.getElementById("reload-btn").addEventListener("click", () => {
     // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
 });
@@ -509,15 +599,28 @@ settings_btn.addEventListener("click", (event) => {
     settings_modal.showModal()
 })
 
-close_modal_btn = document.getElementById("close-settings-btn")
-close_modal_btn.addEventListener("click", (event) => {
+close_settings_modal_btn = document.getElementById("close-settings-btn")
+close_settings_modal_btn.addEventListener("click", (event) => {
     settings_modal.close()
 })
 
 settings_modal.addEventListener('click', () => { settings_modal.close() });
 
-settings_modal_inner = document.getElementById('inner-dialog');
-settings_modal_inner.addEventListener('click', (event) => { event.stopPropagation() });
+reset_scores_btn = document.getElementById("reset-scores-btn")
+confirm_modal = document.getElementById("confirm-modal")
+reset_scores_btn.addEventListener("click", (event) => {
+    confirm_modal.showModal()
+})
+
+close_confirm_modal_btn = document.getElementById("close-confirm-btn")
+close_confirm_modal_btn.addEventListener("click", (event) => {
+    confirm_modal.close()
+})
+
+confirm_modal.addEventListener('click', () => { confirm_modal.close() });
+
+modal_inners = document.querySelectorAll('.inner-dialog');
+modal_inners.forEach((e) => {e.addEventListener('click', (event) => { event.stopPropagation() })});
 
 function update_color() {
     document.querySelector("body").style.setProperty("--main-color", document.getElementById("theme").value)
@@ -532,6 +635,7 @@ function save_settings() {
     };
     mainColor = document.getElementById("theme").value
     document.querySelector("body").style.setProperty('--main-color', mainColor)
+    weightedShuffle = document.getElementById("shuffle-type").checked
 
     // Make the POST request using the fetch API
     fetch("/api/save-settings", {
@@ -553,6 +657,31 @@ function save_settings() {
         });
 }
 
+async function reset_scores(){
+    try {
+        const response = await fetch('http://localhost:8080/api/reset-scores');
+
+        if (!response.ok) {
+            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+        }
+
+        document.querySelectorAll("tbody > tr").forEach((row) => {
+            row.setAttribute("Score", 0)
+            headers = document.querySelectorAll("th")
+            for (i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === "Score") {
+                    idx = i
+                }
+            }
+            row.querySelectorAll("td")[idx].textContent = row.getAttribute("Score")
+            like_btn.removeAttribute("liked")
+            dislike_btn.removeAttribute("disliked")
+        })
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
 cancel_settings_btn = document.getElementById("cancel-settings-btn")
 save_settings_btn = document.getElementById("save-settings-btn")
 
@@ -562,4 +691,16 @@ cancel_settings_btn.addEventListener("click", (event) => {
 
 save_settings_btn.addEventListener("click", (event) => {
     save_settings()
+})
+
+cancel_confirm_btn = document.getElementById("cancel-confirm-btn")
+confirm_btn = document.getElementById("confirm-btn")
+
+cancel_confirm_btn.addEventListener("click", (event) => {
+    confirm_modal.close()
+})
+
+confirm_btn.addEventListener("click", (event) => {
+    reset_scores()
+    confirm_modal.close()
 })
