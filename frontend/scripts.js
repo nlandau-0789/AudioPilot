@@ -563,9 +563,9 @@ reset_scores_btn.addEventListener("click", (event) => {
 
 
 
-document.getElementById("reload-btn").addEventListener("click", () => {
-    // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
-});
+// document.getElementById("reload-btn").addEventListener("click", () => {
+//     // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
+// });
 
 search_bar = document.getElementById("search-bar")
 search_bar.addEventListener("keydown", (event) => {
