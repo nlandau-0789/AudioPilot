@@ -473,6 +473,12 @@ play_btn.addEventListener("click", (event) => {
     }
 })
 
+window.addEventListener("keypress", (event) => {
+    if (event.key === " ") {
+        play_btn.click()
+    }
+})
+
 shuffle_btn = document.getElementById("shuffle-btn")
 shuffle_btn.addEventListener("click", (event) => {
     if (isPlaying()) {
