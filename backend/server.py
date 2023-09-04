@@ -2,6 +2,10 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 
 class RequestHandler(BaseHTTPRequestHandler):
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        BaseHTTPRequestHandler.end_headers(self)
+    
     def do_GET(self):
         from backend.api import get
         handlers = get().handlers
@@ -74,10 +78,24 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"")
 
-def run_server():
-    PORT = 8080
-    server_address = ('', PORT)
-    httpd = HTTPServer(server_address, RequestHandler)
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()
+from multiprocessing import Process
+class server:
+    def __init__(self) -> None:
+        self.running = False
+        self.PORT = 6548
 
+    def server_runner(self):
+        server_address = ('', self.PORT)
+        with HTTPServer(server_address, RequestHandler) as httpd:
+            print(f"Serving at port {self.PORT}")
+            httpd.serve_forever()
+
+    def start(self):
+        self.server_process = Process(target=self.server_runner)
+        self.server_process.start()
+
+        
+    def stop(self):
+        self.server_process.terminate()
+        self.server_process.join()
+        self.server_process = None

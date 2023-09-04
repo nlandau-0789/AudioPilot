@@ -37,7 +37,7 @@ function make_row(data, headers) {
 
 async function fetchData() {
     try {
-        const response = await fetch('http://localhost:8080/api/music-data');
+        const response = await fetch('/api/music-data');
 
         if (!response.ok) {
             throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
@@ -52,7 +52,7 @@ async function fetchData() {
 
 async function getSettings() {
     try {
-        const response = await fetch('http://localhost:8080/api/settings');
+        const response = await fetch('/api/settings');
 
         if (!response.ok) {
             throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
@@ -473,7 +473,15 @@ play_btn.addEventListener("click", (event) => {
     }
 })
 
-window.addEventListener("keypress", (event) => {
+
+
+window.addEventListener("keydown", (event) => {
+    if (event.key === " ") {
+        event.preventDefault();
+    }
+})
+
+window.addEventListener("keyup", (event) => {
     if (event.key === " ") {
         play_btn.click()
     }
@@ -665,7 +673,7 @@ function save_settings() {
 
 async function reset_scores(){
     try {
-        const response = await fetch('http://localhost:8080/api/reset-scores');
+        const response = await fetch('/api/reset-scores');
 
         if (!response.ok) {
             throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
