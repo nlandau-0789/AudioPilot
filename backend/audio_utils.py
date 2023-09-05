@@ -1,5 +1,5 @@
 import json, os
-with open("backend/config.json", "r") as f:
+with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
 def format_time(seconds):

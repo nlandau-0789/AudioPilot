@@ -1,8 +1,8 @@
 import os
 import json
-import threading
+import multiprocessing
 
-with open("backend/config.json", "r") as f:
+with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
 class get:
@@ -25,7 +25,7 @@ class post:
 
 @get('/', 'text/html')
 def get_front():
-    with open('frontend/index.html', 'rb') as file:
+    with open("frontend/index.html", 'rb') as file:
         return file.read()
 
 @get('/api/music-count')
@@ -49,7 +49,7 @@ def get_music_list():
 from backend.audio_utils import get_audio_data
 def make_full_cache():
     global music_dir
-    with open("backend/config.json", "r") as f:
+    with open("config.json", "r") as f:
         music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
     music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
     music_data = {filename: get_audio_data(os.path.join(music_dir, filename)) for filename in music_list}
@@ -57,7 +57,7 @@ def make_full_cache():
         f.write(json.dumps(music_data))
     print("Done writing full cache")
 
-update_cache = lambda : threading.Thread(target=make_full_cache).start()
+update_cache = lambda : multiprocessing.Process(target=make_full_cache).start()
 
 @get('/api/update-cache')
 def update_cache_req():
@@ -79,7 +79,7 @@ def get_music_list():
 
 @get('/api/music-dir-path')
 def get_music_dir_path():
-    with open("backend/config.json", "r") as f:
+    with open("config.json", "r") as f:
         music_dir = json.loads(f.read())["music_dir_path"]
     response_data = {"path": music_dir}
     response_json = json.dumps(response_data).encode('utf-8')
@@ -87,7 +87,7 @@ def get_music_dir_path():
 
 @get('/api/theme')
 def get_theme():
-    with open("backend/config.json", "r") as f:
+    with open("config.json", "r") as f:
         music_dir = json.loads(f.read())["theme"]
     response_data = {"color": music_dir}
     response_json = json.dumps(response_data).encode('utf-8')
@@ -95,7 +95,7 @@ def get_theme():
 
 @get('/api/settings')
 def get_settings():
-    with open("backend/config.json", "r") as f:
+    with open("config.json", "r") as f:
         response_json = f.read().encode('utf-8')
     return response_json
 
@@ -115,5 +115,5 @@ def reset_scores():
 
 @post('/api/save-settings')
 def set_settings(settings):
-    with open("backend/config.json", "w") as f:
+    with open("config.json", "w") as f:
         f.write(json.dumps(settings))
