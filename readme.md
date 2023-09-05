@@ -1,14 +1,32 @@
-Installation :
+# Installation
 
-Créer un environement python virtuel (recommendé, mais non obligatoire) :
+Pour utiliser ce projet, suivez ces étapes d'installation :
 
-```python -m venv venv```
+## Créer un environnement Python virtuel (recommandé, mais non obligatoire) :
 
-```.\venv\Scripts\activate```
+```shell
+python -m venv venv
+```
 
-Installer les modules nécéssaires :
-```pip install -r requirements.txt```
+```shell
+.\venv\Scripts\activate
+```
 
-Il suffit ensuite de lancer main.py
+## Installer les modules nécessaires :
 
-Il faut ensuite aller dans les paramètres et mettre le dossier contenant les musiques.
+```shell
+pip install -r requirements.txt
+```
+
+## Lancer l'application :
+
+```shell
+python main.py
+```
+
+## Configuration
+
+Après avoir lancé l'application, assurez-vous de configurer les paramètres en suivant ces étapes :
+
+1. Accédez aux paramètres de l'application.
+2. Ecrivez le chemin du dossier approprié pour que l'application puisse accéder à vos fichiers audio.
