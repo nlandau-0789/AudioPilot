@@ -1,7 +1,16 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
+from backend.debug import print
 
 class RequestHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+
+        message = format % args
+        print("%s - - [%s] %s\n" %
+                (self.address_string(),
+                self.log_date_time_string(),
+                message.translate(self._control_char_table)))
+    
     def end_headers (self):
         self.send_header('Access-Control-Allow-Origin', '*')
         BaseHTTPRequestHandler.end_headers(self)
@@ -87,7 +96,7 @@ class server:
     def server_runner(self):
         server_address = ('', self.PORT)
         with HTTPServer(server_address, RequestHandler) as httpd:
-            print(f"Serving at port {self.PORT}")
+            print(f"Serving at port {self.PORT}\n")
             httpd.serve_forever()
 
     def start(self):

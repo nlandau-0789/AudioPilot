@@ -1,4 +1,5 @@
 import json, os
+from backend.debug import print
 with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 

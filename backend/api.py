@@ -1,6 +1,7 @@
 import os
 import json
 import multiprocessing
+from backend.debug import print
 
 with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
@@ -55,7 +56,7 @@ def make_full_cache():
     music_data = {filename: get_audio_data(os.path.join(music_dir, filename)) for filename in music_list}
     with open("cache/music_list.cache", "w", encoding="utf-8") as f:
         f.write(json.dumps(music_data))
-    print("Done writing full cache")
+    print("Done writing full cache\n")
 
 update_cache = lambda : multiprocessing.Process(target=make_full_cache).start()
 
@@ -103,7 +104,7 @@ def get_settings():
 def set_score(data):
     from backend.audio_utils import update_score
     update_score(data["filename"], data["new_score"])
-    print(f"{data['filename']}'s new score : {data['new_score']}")
+    print(f"{data['filename']}'s new score : {data['new_score']}\n")
     update_cache()
 
 @get('/api/reset-scores')
