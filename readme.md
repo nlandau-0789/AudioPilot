@@ -3,6 +3,7 @@ Installation :
 Créer un environement python virtuel (recommendé, mais non obligatoire) :
 
 ```python -m venv venv```
+
 ```.\venv\Scripts\activate```
 
 Installer les modules nécéssaires :
