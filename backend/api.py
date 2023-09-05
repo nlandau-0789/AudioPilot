@@ -48,6 +48,9 @@ def get_music_list():
 
 from backend.audio_utils import get_audio_data
 def make_full_cache():
+    global music_dir
+    with open("backend/config.json", "r") as f:
+        music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
     music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
     music_data = {filename: get_audio_data(os.path.join(music_dir, filename)) for filename in music_list}
     with open("cache/music_list.cache", "w", encoding="utf-8") as f:
@@ -56,6 +59,10 @@ def make_full_cache():
 
 update_cache = lambda : threading.Thread(target=make_full_cache).start()
 
+@get('/api/update-cache')
+def update_cache_req():
+    make_full_cache()
+
 @get('/api/music-data')
 def get_music_list():
     with open("cache/music_list.cache", "r", encoding="utf-8") as f:
@@ -63,7 +70,7 @@ def get_music_list():
     music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
     music_data = [cache[filename] if filename in cache else get_audio_data(os.path.join(music_dir, filename)) for filename in music_list]
 
-    response_data = {"list": music_data}
+    response_data = {"list": music_data or []}
     response_json = json.dumps(response_data).encode('utf-8')
 
     update_cache()

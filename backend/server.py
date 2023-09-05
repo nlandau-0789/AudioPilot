@@ -14,7 +14,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', handler_data["content_type"])
                 self.end_headers()
-                response_data = handler_data["handler"]()
+                response_data = handler_data["handler"]() or b""
                 self.wfile.write(response_data)
                 return
         if self.headers.get('Range'):

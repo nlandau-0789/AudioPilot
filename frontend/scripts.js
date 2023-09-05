@@ -647,10 +647,7 @@ function save_settings() {
         "theme": document.getElementById("theme").value,
         "weighted_shuffle": document.getElementById("shuffle-type").checked
     };
-    mainColor = document.getElementById("theme").value
-    document.querySelector("body").style.setProperty('--main-color', mainColor)
-    weightedShuffle = document.getElementById("shuffle-type").checked
-
+    
     // Make the POST request using the fetch API
     fetch("/api/save-settings", {
         method: "POST",
@@ -669,21 +666,30 @@ function save_settings() {
             // Handle any errors that occurred during the fetch
             console.error("Error:", error);
         });
-}
-
-async function reset_scores(){
-    try {
-        const response = await fetch('/api/reset-scores');
-
-        if (!response.ok) {
-            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+        if (music_dir_path != document.getElementById("music-dir-path").value) {
+            fetch("api/update-cache").then((r) => {
+                reload()
+            })
         }
-
-        document.querySelectorAll("tbody > tr").forEach((row) => {
-            row.setAttribute("Score", 0)
-            headers = document.querySelectorAll("th")
-            for (i = 0; i < headers.length; i++) {
-                if (headers[i].textContent === "Score") {
+        music_dir_path = document.getElementById("music-dir-path").value
+        mainColor = document.getElementById("theme").value
+        document.querySelector("body").style.setProperty('--main-color', mainColor)
+        weightedShuffle = document.getElementById("shuffle-type").checked
+    }
+    
+    async function reset_scores(){
+        try {
+            const response = await fetch('/api/reset-scores');
+            
+            if (!response.ok) {
+                throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+            }
+            
+            document.querySelectorAll("tbody > tr").forEach((row) => {
+                row.setAttribute("Score", 0)
+                headers = document.querySelectorAll("th")
+                for (i = 0; i < headers.length; i++) {
+                    if (headers[i].textContent === "Score") {
                     idx = i
                 }
             }
