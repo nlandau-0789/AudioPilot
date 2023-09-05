@@ -1,6 +1,6 @@
 Installation :
 
-Créer un environement python virtuel (recommendé, mais non obligatoire)
+Créer un environement python virtuel (recommendé, mais non obligatoire) :
 `python -m venv venv`
 `.\venv\Scripts\activate`
 
