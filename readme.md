@@ -18,11 +18,17 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-## Lancer l'application :
-
+## Installer cx_Freeze
 ```shell
-python main.py
+pip install cx_Freeze
 ```
+
+## Lancer le build de l'application
+```shell
+python setup.py build
+```
+
+L'application se trouvera dans /build/quelque chose/main.exe
 
 ## Configuration
 
