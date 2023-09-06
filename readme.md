@@ -18,11 +18,6 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-## Installer cx_Freeze
-```shell
-pip install cx_Freeze
-```
-
 ## Lancer le build de l'application
 ```shell
 python setup.py build
