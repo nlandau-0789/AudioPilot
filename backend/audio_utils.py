@@ -51,5 +51,8 @@ def get_audio_data(filename):
 def update_score(filename, new_score):
     import os
     audio = eyed3.load(os.path.join(music_dir, filename))
-    audio.tag.payment_url = new_score
-    audio.tag.save(encoding="utf-8")
+    try :
+        audio.tag.payment_url = new_score
+        audio.tag.save(encoding="utf-8")
+    except :
+        print(f"Wasn't able to write tags on file {filename}")
