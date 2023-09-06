@@ -29,7 +29,7 @@ def get_audio_data(filename):
     except AttributeError:
         audio.initTag()
         result = {
-            "Titre": [filename.replace(music_dir, "")]*2,
+            "Titre": [os.path.basename(filename)]*2,
             "Artiste": [""]*2,
             "Durée": [format_time(audio.info.time_secs), audio.info.time_secs],
             "Album": [""]*2,
@@ -37,7 +37,7 @@ def get_audio_data(filename):
             "filename": [filename]*2,
         }
         try :
-            audio.tag.title = filename.replace(music_dir, "")
+            audio.tag.title = os.path.basename(filename)
             audio.tag.artist = ""
         except :
             print(f"Wasn't able to write tags on file {filename}")
