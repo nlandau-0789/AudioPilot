@@ -5,6 +5,12 @@ base = None
 if sys.platform == "win32":
     base = "Win32GUI"
 
+with open("config.json", "w") as f:
+    f.write('''{"music_dir_path": "", "theme": "#009879", "weighted_shuffle": true}''')
+
+with open("cache/music_list.cache", "w") as f:
+    f.write('{}')
+
 setup(
     name="AudioPilot",
     version="1.0",

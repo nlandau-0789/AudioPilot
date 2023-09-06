@@ -7,6 +7,8 @@ with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
 def get_all_filenames(directory):
+    # if not directory:
+    #     return []
     all_filenames = []
 
     for root, _, files in os.walk(directory):

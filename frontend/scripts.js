@@ -72,8 +72,14 @@ async function getSettings() {
 }
 
 async function reload() {
-    await fetchData()
     await getSettings()
+    if (music_dir_path === "") {
+        console.log("music dir path empty")
+        settings_modal.showModal()
+        return
+        // while (settings_modal.hasAttribute("open")) {}
+    }
+    await fetchData()
     let table = document.getElementById("music-list-display")
     let table_body = document.querySelector("tbody")
     let table_head = document.querySelector("thead")
@@ -699,10 +705,10 @@ settings_btn.addEventListener("click", (event) => {
 
 close_settings_modal_btn = document.getElementById("close-settings-btn")
 close_settings_modal_btn.addEventListener("click", (event) => {
-    settings_modal.close()
+    if (document.getElementById("music-dir-path").value) {settings_modal.close()}
 })
 
-settings_modal.addEventListener('click', () => { settings_modal.close() });
+settings_modal.addEventListener('click', () => { if (document.getElementById("music-dir-path").value) {settings_modal.close()} });
 
 reset_scores_btn = document.getElementById("reset-scores-btn")
 confirm_modal = document.getElementById("confirm-modal")
@@ -790,11 +796,13 @@ cancel_settings_btn = document.getElementById("cancel-settings-btn")
 save_settings_btn = document.getElementById("save-settings-btn")
 
 cancel_settings_btn.addEventListener("click", (event) => {
-    settings_modal.close()
+    if (document.getElementById("music-dir-path").value) {settings_modal.close()}
 })
 
 save_settings_btn.addEventListener("click", (event) => {
     save_settings()
+    soft_reload()
+    if (document.getElementById("music-dir-path").value) {settings_modal.close()}
 })
 
 cancel_confirm_btn = document.getElementById("cancel-confirm-btn")

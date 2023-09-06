@@ -24,14 +24,14 @@ class WebApp(QMainWindow):
 def main():
     server_instance = server()
     server_instance.start()
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('favicon.ico'))
-    app.setApplicationDisplayName("AudioPilot")
-    ex = WebApp()
-    ex.showMaximized()
-    app.exec()
-    server_instance.stop()
-    sys.exit()
+    # app = QApplication(sys.argv)
+    # app.setWindowIcon(QIcon('favicon.ico'))
+    # app.setApplicationDisplayName("AudioPilot")
+    # ex = WebApp()
+    # ex.showMaximized()
+    # app.exec()
+    # server_instance.stop()
+    # sys.exit()
 
 import multiprocessing
 
