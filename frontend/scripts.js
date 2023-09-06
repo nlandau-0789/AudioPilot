@@ -263,7 +263,7 @@ function random_shuffle_playlist() {
 function softmax(scores) {
     scores = scores.map((score) => parseInt(score))
     const maxScore = Math.max(...scores)
-    const expScores = scores.map((score) => Math.exp(parseInt(score)-maxScore));
+    const expScores = scores.map((score) => Math.exp(parseInt(score) - maxScore));
     const sumExpScores = expScores.reduce((acc, expScore) => acc + expScore, 0);
     const res = expScores.map((expScore) => expScore / sumExpScores);
     // console.log(maxScore, expScores, sumExpScores, res)
@@ -289,7 +289,7 @@ function weighted_shuffle_playlist() {
     for (i = 0; i < his.length; i++) {
         his[i].setAttribute("custom-shuffle-score", scoresHi[i])
     }
-    
+
     scoresLo = softmax(los.map((e) => e.getAttribute("Score")))
     for (i = 0; i < los.length; i++) {
         los[i].setAttribute("custom-shuffle-score", scoresLo[i])
@@ -306,8 +306,8 @@ function weighted_shuffle_playlist() {
         if ((Math.random() <= 0.8 && his.length > 0) || los.length === 0) {
             t = Math.random() * hiMax
             idx = 0
-            while (t-his[idx].getAttribute("custom-shuffle-score") > 0 && idx <= his.length){
-                t-=his[idx].getAttribute("custom-shuffle-score")
+            while (t - his[idx].getAttribute("custom-shuffle-score") > 0 && idx <= his.length) {
+                t -= his[idx].getAttribute("custom-shuffle-score")
                 idx++
             }
             if (idx === his.length) {
@@ -319,8 +319,8 @@ function weighted_shuffle_playlist() {
         } else {
             t = Math.random() * loMax
             idx = 0
-            while (t-los[idx].getAttribute("custom-shuffle-score") > 0 && idx <= los.length){
-                t-=los[idx].getAttribute("custom-shuffle-score")
+            while (t - los[idx].getAttribute("custom-shuffle-score") > 0 && idx <= los.length) {
+                t -= los[idx].getAttribute("custom-shuffle-score")
                 idx++
             }
             if (idx === los.length) {
@@ -336,7 +336,7 @@ function weighted_shuffle_playlist() {
 }
 
 function shuffle_playlist() {
-    if (weightedShuffle){
+    if (weightedShuffle) {
         weighted_shuffle_playlist()
     } else {
         random_shuffle_playlist()
@@ -479,11 +479,39 @@ window.addEventListener("keydown", (event) => {
     if (event.key === " " && event.target !== search_bar) {
         event.preventDefault();
     }
+    if (lazyAudio.hasAttribute("src")) {
+        if (event.key === "l" && event.target !== search_bar) {
+            event.preventDefault();
+        }
+        if (event.key === "j" && event.target !== search_bar) {
+            event.preventDefault();
+        }
+        if (event.code === 'ArrowRight' && event.target !== search_bar) {
+            event.preventDefault();
+        }
+        if (event.code === 'ArrowLeft' && event.target !== search_bar) {
+            event.preventDefault();
+        }
+    }
 })
 
 window.addEventListener("keyup", (event) => {
     if (event.key === " " && event.target !== search_bar) {
         play_btn.click();
+    }
+    if (lazyAudio.hasAttribute("src")) {
+        if (event.key === "l" && event.target !== search_bar) {
+            lazyAudio.currentTime += 10
+        }
+        if (event.key === "j" && event.target !== search_bar) {
+            lazyAudio.currentTime = Math.max(0, lazyAudio.currentTime - 10)
+        }
+        if (event.code === 'ArrowRight' && event.target !== search_bar) {
+            lazyAudio.currentTime += 5
+        }
+        if (event.code === 'ArrowLeft' && event.target !== search_bar) {
+            lazyAudio.currentTime = Math.max(0, lazyAudio.currentTime - 5)
+        }
     }
 })
 
@@ -634,7 +662,7 @@ close_confirm_modal_btn.addEventListener("click", (event) => {
 confirm_modal.addEventListener('click', () => { confirm_modal.close() });
 
 modal_inners = document.querySelectorAll('.inner-dialog');
-modal_inners.forEach((e) => {e.addEventListener('click', (event) => { event.stopPropagation() })});
+modal_inners.forEach((e) => { e.addEventListener('click', (event) => { event.stopPropagation() }) });
 
 function update_color() {
     document.querySelector("body").style.setProperty("--main-color", document.getElementById("theme").value)
@@ -647,7 +675,7 @@ function save_settings() {
         "theme": document.getElementById("theme").value,
         "weighted_shuffle": document.getElementById("shuffle-type").checked
     };
-    
+
     // Make the POST request using the fetch API
     fetch("/api/save-settings", {
         method: "POST",
@@ -666,30 +694,30 @@ function save_settings() {
             // Handle any errors that occurred during the fetch
             console.error("Error:", error);
         });
-        if (music_dir_path != document.getElementById("music-dir-path").value) {
-            fetch("api/update-cache").then((r) => {
-                reload()
-            })
-        }
-        music_dir_path = document.getElementById("music-dir-path").value
-        mainColor = document.getElementById("theme").value
-        document.querySelector("body").style.setProperty('--main-color', mainColor)
-        weightedShuffle = document.getElementById("shuffle-type").checked
+    if (music_dir_path != document.getElementById("music-dir-path").value) {
+        fetch("api/update-cache").then((r) => {
+            reload()
+        })
     }
-    
-    async function reset_scores(){
-        try {
-            const response = await fetch('/api/reset-scores');
-            
-            if (!response.ok) {
-                throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
-            }
-            
-            document.querySelectorAll("tbody > tr").forEach((row) => {
-                row.setAttribute("Score", 0)
-                headers = document.querySelectorAll("th")
-                for (i = 0; i < headers.length; i++) {
-                    if (headers[i].textContent === "Score") {
+    music_dir_path = document.getElementById("music-dir-path").value
+    mainColor = document.getElementById("theme").value
+    document.querySelector("body").style.setProperty('--main-color', mainColor)
+    weightedShuffle = document.getElementById("shuffle-type").checked
+}
+
+async function reset_scores() {
+    try {
+        const response = await fetch('/api/reset-scores');
+
+        if (!response.ok) {
+            throw new Error(`Fetch error: ${response.status} - ${response.statusText}`);
+        }
+
+        document.querySelectorAll("tbody > tr").forEach((row) => {
+            row.setAttribute("Score", 0)
+            headers = document.querySelectorAll("th")
+            for (i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === "Score") {
                     idx = i
                 }
             }
