@@ -14,7 +14,7 @@ with open("cache/music_list.cache", "w") as f:
 setup(
     name="AudioPilot",
     version="1.0",
-    description="A noice audio player",
+    description="AudioPilot",
     # executables=[Executable(script="main.py", icon = 'favicon.ico')], 
     executables=[Executable(script="main.py", base = base, icon = 'favicon.ico')],
     options={
