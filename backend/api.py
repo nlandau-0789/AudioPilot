@@ -6,6 +6,16 @@ from backend.debug import print
 with open("config.json", "r") as f:
     music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
 
+def get_all_filenames(directory):
+    all_filenames = []
+
+    for root, _, files in os.walk(directory):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            all_filenames.append(file_path)
+
+    return all_filenames
+
 class get:
     def __init__(self, path = "", content_type = "application/json", handlers = []):
         self.handlers = handlers
@@ -31,7 +41,7 @@ def get_front():
 
 @get('/api/music-count')
 def get_music_count():
-    music_count = len([filename for filename in os.listdir(music_dir) if ".mp3" in filename])
+    music_count = len([filename for filename in get_all_filenames(music_dir) if ".mp3" in filename])
 
     response_data = {"count": music_count}
     response_json = json.dumps(response_data).encode('utf-8')
@@ -40,7 +50,7 @@ def get_music_count():
 
 @get('/api/music-list')
 def get_music_list():
-    music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
+    music_list = [filename for filename in get_all_filenames(music_dir) if ".mp3" in filename]
 
     response_data = {"list": music_list}
     response_json = json.dumps(response_data).encode('utf-8')
@@ -52,7 +62,7 @@ def make_full_cache():
     global music_dir
     with open("config.json", "r") as f:
         music_dir = os.path.abspath(json.loads(f.read())["music_dir_path"])
-    music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
+    music_list = [filename for filename in get_all_filenames(music_dir) if ".mp3" in filename]
     music_data = {filename: get_audio_data(os.path.join(music_dir, filename)) for filename in music_list}
     with open("cache/music_list.cache", "w", encoding="utf-8") as f:
         f.write(json.dumps(music_data))
@@ -68,7 +78,7 @@ def update_cache_req():
 def get_music_list():
     with open("cache/music_list.cache", "r", encoding="utf-8") as f:
         cache = json.loads(f.read())
-    music_list = [filename for filename in os.listdir(music_dir) if ".mp3" in filename]
+    music_list = [filename for filename in get_all_filenames(music_dir) if ".mp3" in filename]
     music_data = [cache[filename] if filename in cache else get_audio_data(os.path.join(music_dir, filename)) for filename in music_list]
 
     response_data = {"list": music_data or []}
@@ -110,7 +120,7 @@ def set_score(data):
 @get('/api/reset-scores')
 def reset_scores():
     from backend.audio_utils import update_score
-    [update_score(filename, "0") for filename in os.listdir(music_dir) if ".mp3" in filename]
+    [update_score(filename, "0") for filename in get_all_filenames(music_dir) if ".mp3" in filename]
     update_cache()
     return b""
 
