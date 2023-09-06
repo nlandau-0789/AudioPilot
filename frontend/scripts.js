@@ -111,6 +111,58 @@ async function reload() {
     });
 }
 
+async function soft_reload() {
+    await fetchData()
+    let table = document.getElementById("music-list-display")
+    let table_body = document.querySelector("tbody")
+    let table_head = document.querySelector("thead")
+    table.removeChild(table_head)
+    table.appendChild(document.createElement("thead"))
+    // table_body.classList.add("scroll-shadows")
+    table.appendChild(table_body)
+    // console.log(data)
+    // console.log(data.length)
+    headers = Object.keys(music_data[0])
+    {
+        let e = document.createElement("tr")
+        for (let i = 0; i < headers.length; i++) {
+            if (headers[i] === "filename") { continue }
+            cell = document.createElement("th")
+            cell.append(headers[i])
+            e.appendChild(cell)
+        }
+        table.querySelector("thead").appendChild(e)
+    }
+
+    const seen = new Set();
+    Array.from(table_body.children).forEach((row) => {seen.add(row.getAttribute("filename"))})
+
+    for (let i = 0; i < music_data.length; i++) {
+        if (seen.has(music_data[i]["filename"][1])) continue
+        console.log(music_data[i])
+        let row = make_row(music_data[i], headers)
+        table_body.appendChild(row)
+    }
+
+    seen.clear()
+    music_data.forEach((data) => {seen.add(data["filename"][1])})
+    to_delete = []
+    Array.from(table_body.children).forEach((row) => {if(!seen.has(row.getAttribute("filename"))){to_delete.push(row)}})
+    to_delete.forEach((row) => table_body.removeChild(row))
+    
+
+    document.querySelectorAll(".table-sortable th").forEach(headerCell => {
+        headerCell.setAttribute("sortState", 0)
+        headerCell.addEventListener("click", (event) => {
+            // const tableElement = headerCell.parentElement.parentElement.parentElement;
+            // const headerIndex = Array.prototype.indexOf.call(headerCell.parentElement.children, headerCell);
+            handleSorting(event, headerCell)
+        });
+    });
+
+    make_search()
+}
+
 window.onload = reload
 
 function stableCustomQuicksort(arr, compare, low, high) {
@@ -605,12 +657,11 @@ reset_scores_btn.addEventListener("click", (event) => {
 
 
 
-// document.getElementById("reload-btn").addEventListener("click", () => {
-//     // reload(); ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
-// });
+document.getElementById("reload-btn").addEventListener("click", () => {
+    soft_reload(); // ==> il faut pas remplacer les éléments déjà existants, juste supprimer ceux qui n'existent plus, et ajouter les nouveaux
+});
 
-search_bar = document.getElementById("search-bar")
-search_bar.addEventListener("keydown", (event) => {
+function make_search() {
     table = document.querySelector("#music-list-display > tbody").children
     for (i = 0; i < table.length; i++) {
         table[i].setAttribute("search-value", stringDistance(table[i].getAttribute("Titre"), search_bar.value))
@@ -633,6 +684,11 @@ search_bar.addEventListener("keydown", (event) => {
     document.querySelectorAll("th").forEach((e) => {
         e.setAttribute("sortState", 0)
     })
+}
+
+search_bar = document.getElementById("search-bar")
+search_bar.addEventListener("keydown", (event) => {
+    make_search()
 })
 
 settings_btn = document.getElementById("settings-btn")
