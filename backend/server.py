@@ -28,7 +28,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 return
         if self.headers.get('Range'):
             import os, urllib.parse
-            self.path = urllib.parse.unquote(self.path).strip("/")
+            # self.path = urllib.parse.unquote(self.path).strip("/")
+            self.path = urllib.parse.unquote(self.path)
             self.file_size = os.path.getsize(self.path)
             range_header = self.headers.get('Range')
             start_byte = int(range_header.split('=')[1].split('-')[0])
