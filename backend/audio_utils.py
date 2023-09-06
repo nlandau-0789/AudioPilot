@@ -36,10 +36,16 @@ def get_audio_data(filename):
             "Score": ["0"]*2,
             "filename": [filename]*2,
         }
-        audio.tag.title = filename.replace(music_dir, "")
-        audio.tag.artist = ""
-    audio.tag.payment_url = audio.tag.payment_url or "0"
-    audio.tag.save(encoding="utf-8")
+        try :
+            audio.tag.title = filename.replace(music_dir, "")
+            audio.tag.artist = ""
+        except :
+            print(f"Wasn't able to write tags on file {filename}")
+    try :
+        audio.tag.payment_url = audio.tag.payment_url or "0"
+        audio.tag.save(encoding="utf-8")
+    except :
+        print(f"Wasn't able to write tags on file {filename}")
     return result
 
 def update_score(filename, new_score):
