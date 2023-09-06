@@ -476,14 +476,14 @@ play_btn.addEventListener("click", (event) => {
 
 
 window.addEventListener("keydown", (event) => {
-    if (event.key === " ") {
+    if (event.key === " " && event.target !== search_bar) {
         event.preventDefault();
     }
 })
 
 window.addEventListener("keyup", (event) => {
-    if (event.key === " ") {
-        play_btn.click()
+    if (event.key === " " && event.target !== search_bar) {
+        play_btn.click();
     }
 })
 
