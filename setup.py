@@ -19,7 +19,7 @@ setup(
     executables=[Executable(script="main.py", base = base, icon = 'favicon.ico')],
     options={
         "build_exe": {
-            "packages": ["eyed3", "multiprocessing"],
+            # "packages": ["eyed3", "multiprocessing"],
             "include_files": ["frontend", "cache", "config.json", "favicon.ico", "favicon.png"]
         }
     }
