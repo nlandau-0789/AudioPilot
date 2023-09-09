@@ -18,12 +18,17 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-## Lancer le build de l'application
+
+## build Pyinstaller
+
+```shell
+pyinstaller.exe --add-data "frontend;frontend" --add-data "cache;cache" --add-data "config.json;." --clean --noconsole --icon "favicon.ico" main.py
+```
+
+## build cx_freeze
 ```shell
 python setup.py build
 ```
-
-L'application se trouvera dans /build/quelque chose/main.exe
 
 ## Configuration
 
