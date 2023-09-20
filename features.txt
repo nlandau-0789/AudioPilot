@@ -1,0 +1,4 @@
+manual shuffle
+enable/disable modules
+module shuffle
+auto modals

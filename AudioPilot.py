@@ -5,14 +5,14 @@ import webview
 def main():
     server_instance = server()
     server_instance.start()
-    webview.create_window(
-        "AudioPilot",
-        f"http://127.0.0.1:{server_instance.PORT}",
-        maximized=True,
-    )
-    webview.start()
-    server_instance.stop()
-    sys.exit()
+    # webview.create_window(
+    #     "AudioPilot",
+    #     f"http://127.0.0.1:{server_instance.PORT}",
+    #     maximized=True,
+    # )
+    # webview.start()
+    # server_instance.stop()
+    # sys.exit()
 
 import multiprocessing
 

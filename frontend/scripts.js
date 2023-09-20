@@ -4,6 +4,8 @@ let playlist = []
 let music_dir_path;
 let mainColor;
 let weightedShuffle = true;
+
+settings = {}
 lazyAudio = document.getElementById('lazyAudio');
 
 content = document.querySelector('#table-wrapper')
@@ -11,12 +13,14 @@ wrapper = content.parentElement
 shadowTop = document.querySelector('.scroll-shadows-top')
 shadowBottom = document.querySelector('.scroll-shadows-bottom')
 
+play_bar = document.getElementById("playbar")
 play_btn = document.getElementById("play-btn")
 shuffle_btn = document.getElementById("shuffle-btn")
 prec_btn = document.getElementById("play-prec-btn")
 stop_btn = document.getElementById("stop-btn")
 next_btn = document.getElementById("play-next-btn")
 find_btn = document.getElementById("find-btn")
+lr_sep = document.querySelector(".lr-sep")
 
 settings_btn = document.getElementById("settings-btn")
 settings_modal = document.getElementById("settings-modal")
@@ -50,11 +54,11 @@ function make_row(data, headers) {
         dislike_btn.removeAttribute("disliked")
     })
     document.dispatchEvent(new CustomEvent('new_row', {
-        detail: {row: e},
+        detail: { row: e },
         bubbles: true,
         cancelable: true
     }))
-    
+
     return e
 }
 
@@ -82,6 +86,7 @@ async function getSettings() {
         }
 
         const data = await response.json();
+        settings = data
         music_dir_path = data["music_dir_path"];  // Assign the data to the variable
         mainColor = data["theme"];  // Assign the data to the variable
         weightedShuffle = data["weighted_shuffle"];  // Assign the data to the variable
@@ -94,6 +99,33 @@ async function getSettings() {
     document.getElementById("shuffle-type").checked = weightedShuffle
 }
 
+async function getModules() {
+    for (module_name of settings.modules) {
+        let module_component = await (await fetch("/frontend/modules/" + module_name + "/component.html")).text()
+        // let module_settings = await fetch("/frontend/modules/"+module_name+"/settings.html").text()
+
+        temp = document.createElement("div")
+        if (module_component.trim() != "") {
+            temp.setAttribute("class", "sep")
+            play_bar.insertBefore(temp.cloneNode(), lr_sep)
+        }
+
+        temp.innerHTML = module_component
+        for (e of temp.children) {
+            play_bar.insertBefore(e.cloneNode(true), lr_sep)
+        }
+
+        temp = document.createElement("script")
+        temp.setAttribute("src", "/frontend/modules/" + module_name + "/scripts.js")
+        temp.setAttribute("defer", "")
+        document.querySelector("head").appendChild(temp.cloneNode())
+
+
+        // module_script = await fetch("/frontend/modules/"+module_name+"/scripts.js").text()
+        // module_settings
+    }
+}
+
 async function reload() {
     await getSettings()
     if (music_dir_path === "") {
@@ -102,6 +134,7 @@ async function reload() {
         return
         // while (settings_modal.hasAttribute("open")) {}
     }
+    await getModules()
     await getData()
     let table = document.getElementById("music-list-display")
     let table_body = document.querySelector("tbody")
