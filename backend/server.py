@@ -95,7 +95,7 @@ from multiprocessing import Process
 class server:
     def __init__(self) -> None:
         self.running = False
-        self.PORT = 6548
+        self.PORT = 6549
 
     def server_runner(self):
         server_address = ('', self.PORT)

@@ -22,7 +22,7 @@ pip install -r requirements.txt
 ## build Pyinstaller
 
 ```shell
-pyinstaller.exe --add-data "frontend;frontend" --add-data "cache;cache" --add-data "config.json;." --clean --noconsole --icon "favicon.ico" main.py
+pyinstaller.exe --add-data "frontend;frontend" --add-data "cache;cache" --add-data "config.json;." --clean --noconsole --icon "favicon.ico" AudioPilot.py
 ```
 
 ## build cx_freeze

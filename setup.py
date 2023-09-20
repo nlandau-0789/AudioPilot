@@ -16,7 +16,7 @@ setup(
     version="1.0",
     description="AudioPilot",
     # executables=[Executable(script="main.py", icon = 'favicon.ico')], 
-    executables=[Executable(script="main.py", base = base, icon = 'favicon.ico')],
+    executables=[Executable(script="AudioPilot.py", base = base, icon = 'favicon.ico')],
     options={
         "build_exe": {
             # "packages": ["eyed3", "multiprocessing"],

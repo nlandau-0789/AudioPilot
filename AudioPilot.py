@@ -7,7 +7,7 @@ def main():
     server_instance.start()
     webview.create_window(
         "AudioPilot",
-        "http://127.0.0.1:6548",
+        f"http://127.0.0.1:{server_instance.PORT}",
         maximized=True,
     )
     webview.start()
