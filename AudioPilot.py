@@ -11,8 +11,9 @@ def main():
     #     maximized=True,
     # )
     # webview.start()
-    # server_instance.stop()
-    # sys.exit()
+    input("stop ?")
+    server_instance.stop()
+    sys.exit()
 
 import multiprocessing
 

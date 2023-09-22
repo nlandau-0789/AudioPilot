@@ -1,0 +1,20 @@
+details.dialog-section {
+    margin-left: 10px;
+}
+
+.dialog-body {
+    overflow: auto;
+}
+
+.inner-dialog {
+    overflow: hidden;
+}
+
+.dialog-header,
+.dialog-footer {
+    flex-shrink: 0;
+}
+
+.dialog-footer {
+    margin-top: var(--inner-padding);
+}
