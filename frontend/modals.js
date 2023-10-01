@@ -37,6 +37,7 @@ function make_modal(title, body, footer, verification_locked=false){
     let dialog = document.createElement("dialog")
     let inner_div = document.createElement("div")
     inner_div.classList.add("inner-dialog")
+    inner_div.addEventListener('click', (event) => { event.stopPropagation() })
     dialog.appendChild(inner_div)
 
     // Header
@@ -77,7 +78,12 @@ function make_modal(title, body, footer, verification_locked=false){
     }
     inner_div.appendChild(footer_div)
     document.querySelector("body").appendChild(dialog)
+    dialog.addEventListener("click", (event) => {dialog.close()})
     return dialog
+}
+
+function set_modal(element, modal_json) {
+    
 }
 
 
